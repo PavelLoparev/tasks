@@ -53,7 +53,7 @@ class Task {
    *   Water square.
    */
   public function getResult() {
-    $result = 0;
+    $result = -1;
     $sub_square = 0;
 
     // Bottle without a hole.
