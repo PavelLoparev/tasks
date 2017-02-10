@@ -222,7 +222,6 @@ class BottleTest extends TestCase
    * 2 - hole.
    *
    * @code
-   *
    *           1
    *           1
    *  00000000010000
