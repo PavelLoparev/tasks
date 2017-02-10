@@ -84,43 +84,20 @@ class Task {
       $this->hole_position = $original_hole_position;
 
       // Count free square (left side).
+      // Start from a hole position and move to the left.
       $last_bottom_height = 0;
 
       for ($i = $this->hole_position; $i >= 0; $i--) {
-        $current_bottom_height = $this->bottom[$i];
-
-        if ($current_bottom_height > $this->water_line) {
-          $current_bottom_height = $this->water_line;
-        }
-
-        if ($current_bottom_height < $last_bottom_height) {
-          $free_square += $this->water_line - $last_bottom_height;
-        }
-        else {
-          $free_square += $this->water_line - $current_bottom_height;
-          $last_bottom_height = $current_bottom_height;
-        }
-
+        $free_square += $this->getPartOfFreeSquare($this->bottom[$i], $last_bottom_height);
       }
 
       // Count free square (right side).
+      // Start from a hole position + 1 and move right.
       $right_side_start_index = $this->hole_position + 1;
       $last_bottom_height = $this->bottom[$right_side_start_index] > $this->water_line ? $this->water_line : $this->bottom[$right_side_start_index];
 
       for ($i = $right_side_start_index; $i < count($this->bottom); $i++) {
-        $current_bottom_height = $this->bottom[$i];
-
-        if ($current_bottom_height > $this->water_line) {
-          $current_bottom_height = $this->water_line;
-        }
-
-        if ($current_bottom_height < $last_bottom_height) {
-          $free_square += $this->water_line - $last_bottom_height;
-        }
-        else {
-          $free_square += $this->water_line - $current_bottom_height;
-          $last_bottom_height = $current_bottom_height;
-        }
+        $free_square += $this->getPartOfFreeSquare($this->bottom[$i], $last_bottom_height);
       }
 
       $result = $square_without_hole - $free_square;
@@ -129,18 +106,25 @@ class Task {
     return $result;
   }
 
+  /**
+   * Returns part of free space.
+   *
+   * @param int $current_bottom_height
+   * @param int $last_bottom_height
+   * @return int
+   */
   private function getPartOfFreeSquare($current_bottom_height, &$last_bottom_height) {
-    $result = 0;
-
+    // Cut down bottom height if it higher that a waterline.
     if ($current_bottom_height > $this->water_line) {
       $current_bottom_height = $this->water_line;
     }
 
+    // Count free space and update last bottom height if needed.
     if ($current_bottom_height < $last_bottom_height) {
-      $result += $this->water_line - $last_bottom_height;
+      $result = $this->water_line - $last_bottom_height;
     }
     else {
-      $result += $this->water_line - $current_bottom_height;
+      $result = $this->water_line - $current_bottom_height;
       $last_bottom_height = $current_bottom_height;
     }
 
