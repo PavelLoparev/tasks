@@ -174,7 +174,48 @@ class BottleTest extends TestCase
   /**
    * Test bottle with a hole.
    *
-   * Rough bottom.
+   * Rough bottom. Highest bottom line is not higher than waterline.
+   *
+   * 0 - water.
+   * 1 - bottom.
+   * 2 - hole.
+   *
+   * @code
+   *  00000000000000
+   *  00010000010000
+   *  00110000010010
+   *  00110100011011
+   *  00111100011011
+   *  11111100011111
+   *  11111111211111
+   * @endcode
+   */
+  public function testRoughBottomLowHole()
+  {
+    $bottle = new Task([
+      2,
+      2,
+      5,
+      6,
+      3,
+      4,
+      1,
+      1,
+      0,
+      6,
+      4,
+      2,
+      5,
+      4,
+    ], 7, 8);
+
+    $this->assertEquals($bottle->getResult(), 19);
+  }
+
+  /**
+   * Test bottle with a hole.
+   *
+   * Rough bottom. Highest bottom line is higher than waterline.
    *
    * 0 - water.
    * 1 - bottom.
@@ -182,25 +223,38 @@ class BottleTest extends TestCase
    *
    * @code
    *
-   *  01
-   *  0101
-   *  0111
-   *  1111121
+   *           1
+   *           1
+   *  00000000010000
+   *  00010000010000
+   *  00010000010000
+   *  00110000010010
+   *  00110100011011
+   *  00111100011011
+   *  11111100011111
+   *  11111111211111
    * @endcode
    */
-  public function testRoughBottomHole()
+  public function testRoughBottomHighHole()
   {
     $bottle = new Task([
-      1,
-      4,
       2,
+      2,
+      5,
+      7,
       3,
+      4,
+      1,
       1,
       0,
-      1,
-    ], 4, 5);
+      10,
+      4,
+      2,
+      5,
+      4,
+    ], 8, 8);
 
-    $this->assertEquals($bottle->getResult(), 4);
+    $this->assertEquals($bottle->getResult(), 30);
   }
 
 }

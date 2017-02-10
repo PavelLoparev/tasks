@@ -53,12 +53,13 @@ class Task {
    *   Water square.
    */
   public function getResult() {
-    $result = -1;
-    $sub_square = 0;
-
     // Bottle without a hole.
     if (is_null($this->hole_position)) {
+      // Square of a bottom.
+      $sub_square = 0;
+
       foreach ($this->bottom as $bottom_height) {
+        // Cut bottom to waterline height if needed.
         if ($bottom_height > $this->water_line) {
           $sub_square += $this->water_line;
         }
@@ -71,7 +72,76 @@ class Task {
     }
     // Bottle with a hole.
     else {
-      // TODO: implement resolution for bottle with a hole.
+      // Square without water.
+      $free_square = 0;
+
+      // Count square like if there is no hole.
+      $original_hole_position = $this->hole_position;
+      $this->hole_position = NULL;
+      $square_without_hole = $this->getResult();
+
+      // Make a hole again.
+      $this->hole_position = $original_hole_position;
+
+      // Count free square (left side).
+      $last_bottom_height = 0;
+
+      for ($i = $this->hole_position; $i >= 0; $i--) {
+        $current_bottom_height = $this->bottom[$i];
+
+        if ($current_bottom_height > $this->water_line) {
+          $current_bottom_height = $this->water_line;
+        }
+
+        if ($current_bottom_height < $last_bottom_height) {
+          $free_square += $this->water_line - $last_bottom_height;
+        }
+        else {
+          $free_square += $this->water_line - $current_bottom_height;
+          $last_bottom_height = $current_bottom_height;
+        }
+
+      }
+
+      // Count free square (right side).
+      $right_side_start_index = $this->hole_position + 1;
+      $last_bottom_height = $this->bottom[$right_side_start_index] > $this->water_line ? $this->water_line : $this->bottom[$right_side_start_index];
+
+      for ($i = $right_side_start_index; $i < count($this->bottom); $i++) {
+        $current_bottom_height = $this->bottom[$i];
+
+        if ($current_bottom_height > $this->water_line) {
+          $current_bottom_height = $this->water_line;
+        }
+
+        if ($current_bottom_height < $last_bottom_height) {
+          $free_square += $this->water_line - $last_bottom_height;
+        }
+        else {
+          $free_square += $this->water_line - $current_bottom_height;
+          $last_bottom_height = $current_bottom_height;
+        }
+      }
+
+      $result = $square_without_hole - $free_square;
+    }
+
+    return $result;
+  }
+
+  private function getPartOfFreeSquare($current_bottom_height, &$last_bottom_height) {
+    $result = 0;
+
+    if ($current_bottom_height > $this->water_line) {
+      $current_bottom_height = $this->water_line;
+    }
+
+    if ($current_bottom_height < $last_bottom_height) {
+      $result += $this->water_line - $last_bottom_height;
+    }
+    else {
+      $result += $this->water_line - $current_bottom_height;
+      $last_bottom_height = $current_bottom_height;
     }
 
     return $result;
